@@ -16,6 +16,10 @@
         <div class="row">
             <h3>Campeonato Brasileiro - Seria A - 2018</h3>
         </div>
+        <div>
+            {{ time.nome }}
+            <img :src="time.escudo" alt="escudo time">
+        </div>
         <!-- ao colocar dois pontos antes do value você torna a prop reativa-->
         <!-- <input type="text" :value="gols" :id="gols+'id'" @input="gols = $event.target.value"> {{ gols }} -->
         <!-- ou simplesmente:-->
@@ -25,10 +29,20 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script>
+        class Time 
+        {
+            constructor(nome, escudo) 
+            {
+                this.nome = nome;
+                this.escudo = escudo;
+            }
+        }
+
         new Vue({
             el: "#app",
             data: {
-                gols: '3'
+                gols: '3',
+                time: new Time('América MG', 'assets/america_mg_60x60.png')
             },
             methods: {
                 showAlert(){
