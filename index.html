@@ -10,6 +10,12 @@
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet"/>
 <!-- MDB -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/1.0.0/mdb.min.css" rel="stylesheet"/>
+<style type="text/css">
+    .escudo {
+        width: 30px;
+        height: 30px;
+    }
+</style>
 </head>
 <body>
     <div id="app" class="container">
@@ -21,14 +27,18 @@
                 <button class="btn btn-primary" @click="criarNovoJogo">Novo jogo</button>
             </div>
         </div>
-        <div class="col-12">
+        <div class="col-7">
             <input type="text" v-model="novoJogo.casa.gols">
             {{ novoJogo.casa.time ? novoJogo.casa.time.nome : '' }}
+            <img :src="novoJogo.casa.time ? novoJogo.casa.time.escudo : ''" alt="escudo time" class="escudo">
         </div>
-        <div class="col-12">
+        <div class="col-7">
             <input type="text" v-model="novoJogo.fora.gols">
             {{ novoJogo.fora.time ? novoJogo.fora.time.nome : '' }}
+            <img :src="novoJogo.fora.time ? novoJogo.fora.time.escudo : ''" alt="escudo time" class="escudo">
         </div>
+        <!-- os metodos começam com @ e podem ser identificados assim -->
+        <button type="button" class="btn btn-primary" @click="fimJogo">Fim de jogo</button>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -56,8 +66,6 @@
         <!-- <input type="text" :value="gols" :id="gols+'id'" @input="gols = $event.target.value"> {{ gols }} -->
         <!-- ou simplesmente:-->
         <input type="text" :id="gols+'id'" v-model="gols"> {{ gols }}
-        <!-- os metodos começam com @ e podem ser identificados assim -->
-        <button class="btn btn-primary" @click="showAlert">Fim de jogo</button>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script>
@@ -71,6 +79,46 @@
                 this.pontos = 0;
                 this.gm = 0;
                 this.gs = 0;
+            }
+
+            fimJogo(timeVisitante, golsMarcados, golsSofridos) {
+                if(this.foiEmpate(golsMarcados, golsSofridos)) {
+                    this.empate(golsMarcados, golsSofridos);
+                    timeVisitante.empate(golsMarcados, golsSofridos)
+                }
+                if(this.foiVitoria(golsMarcados, golsSofridos)) {
+                    this.vitoria(golsMarcados, golsSofridos);
+                    timeVisitante.derrota(golsSofridos, golsMarcados);
+                } else {
+                    this.derrota(golsMarcados, golsSofridos);
+                    timeVisitante.vitoria(golsSofridos, golsMarcados);
+                }
+            }
+
+            foiEmpate(golsMarcados, golsSofridos) {
+                return golsMarcados === golsSofridos
+            }
+
+            foiVitoria(golsMarcados, golsSofridos) {
+                return golsMarcados > golsSofridos
+            }
+
+            empate(golsMarcados, golsSofridos) {
+                this.atualizarInfo(1, golsMarcados, golsSofridos);
+            }
+
+            vitoria(golsMarcados, golsSofridos) {
+                this.atualizarInfo(3, golsMarcados, golsSofridos);
+            }
+
+            derrota(golsMarcados, golsSofridos) {
+                this.atualizarInfo(0, golsMarcados, golsSofridos);
+            }
+
+            atualizarInfo(pontos, golsMarcados, golsSofridos) {
+                this.pontos + pontos;
+                this.gm += golsMarcados;
+                this.gs += golsSofridos;
             }
         }
 
@@ -112,13 +160,13 @@
                 }
             },
             methods: {
-                showAlert(){
+                showAlert() {
                     alert('Fim de jogo')
                 },
-                pegarValor($event){
+                pegarValor($event) {
                     console.log($event)
                 },
-                criarNovoJogo(){
+                criarNovoJogo() {
                     var 
                     indiceCasa = Math.floor(Math.random()*20),
                     indiceFora = Math.floor(Math.random()*20)
@@ -127,6 +175,13 @@
                     this.novoJogo.casa.gols = 0;
                     this.novoJogo.fora.time = this.times[indiceFora];
                     this.novoJogo.fora.gols = 0;
+                },
+                fimJogo() {
+                    var golsMarcados = parseInt(this.novoJogo.casa.gols);
+                    var golsSofridos = parseInt(this.novoJogo.fora.gols);
+                    var timeAdversario = this.novoJogo.fora.time;
+                    var timeCasa = this.novoJogo.casa.time;
+                    timeCasa.fimJogo(timeAdversario, golsMarcados, golsSofridos)
                 }
             }
         })
