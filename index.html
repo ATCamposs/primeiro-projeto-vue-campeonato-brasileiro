@@ -16,6 +16,19 @@
         <div class="row">
             <h3>Campeonato Brasileiro - Seria A - 2018</h3>
         </div>
+        <div class="row">
+            <div class="col-md-12">
+                <button class="btn btn-primary" @click="criarNovoJogo">Novo jogo</button>
+            </div>
+        </div>
+        <div class="col-12">
+            <input type="text" v-model="novoJogo.casa.gols">
+            {{ novoJogo.casa.time ? novoJogo.casa.time.nome : '' }}
+        </div>
+        <div class="col-12">
+            <input type="text" v-model="novoJogo.fora.gols">
+            {{ novoJogo.fora.time ? novoJogo.fora.time.nome : '' }}
+        </div>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -86,7 +99,17 @@
                     new Time('Vasco', 'assets/vasco_60x60.png'),
                     new Time('América-MG', 'assets/america_mg_60x60.png'),
                     new Time('Paraná', 'assets/parana_60x60.png'),
-                ]
+                ],
+                novoJogo: {
+                    casa: {
+                        time: null,
+                        gols: 0
+                    },
+                    fora: {
+                        time: null,
+                        gols: 0
+                    }
+                }
             },
             methods: {
                 showAlert(){
@@ -94,6 +117,16 @@
                 },
                 pegarValor($event){
                     console.log($event)
+                },
+                criarNovoJogo(){
+                    var 
+                    indiceCasa = Math.floor(Math.random()*20),
+                    indiceFora = Math.floor(Math.random()*20)
+
+                    this.novoJogo.casa.time = this.times[indiceCasa];
+                    this.novoJogo.casa.gols = 0;
+                    this.novoJogo.fora.time = this.times[indiceFora];
+                    this.novoJogo.fora.gols = 0;
                 }
             }
         })
