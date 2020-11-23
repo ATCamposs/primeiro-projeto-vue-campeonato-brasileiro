@@ -27,41 +27,48 @@
                 <button class="btn btn-primary" @click="criarNovoJogo">Novo jogo</button>
             </div>
         </div>
-        <div class="col-7">
-            <input type="text" v-model="novoJogo.casa.gols">
-            {{ novoJogo.casa.time ? novoJogo.casa.time.nome : '' }}
-            <img :src="novoJogo.casa.time ? novoJogo.casa.time.escudo : ''" alt="escudo time" class="escudo">
+        <div class="row">
+            <!-- v-show apenas dá display:none enquanto vif "deleta" o objeto da tela(mas preserva os dados) -->
+            <div class="col-md-12" v-if="visao != 'tabela'">
+                <div class="col-7">
+                    <input type="text" v-model="novoJogo.casa.gols">
+                    {{ novoJogo.casa.time ? novoJogo.casa.time.nome : '' }}
+                    <img :src="novoJogo.casa.time ? novoJogo.casa.time.escudo : ''" alt="escudo time" class="escudo">
+                </div>
+                <div class="col-7">
+                    <input type="text" v-model="novoJogo.fora.gols">
+                    {{ novoJogo.fora.time ? novoJogo.fora.time.nome : '' }}
+                    <img :src="novoJogo.fora.time ? novoJogo.fora.time.escudo : ''" alt="escudo time" class="escudo">
+                </div>
+                <!-- os metodos começam com @ e podem ser identificados assim -->
+                <button type="button" class="btn btn-primary" @click="fimJogo">Fim de jogo</button>
+            </div>
+            <div class="col-md-12" v-else>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Escudo</th>
+                            <th>Nome</th>
+                            <th>Pontos</th>
+                            <th>GM</th>
+                            <th>GS</th>
+                            <th>Saldo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="time in times">
+                            <td>
+                                <img :src="time.escudo" alt="escudo time">
+                            </td>
+                            <td>{{ time.nome }}</td>
+                            <td>{{ time.pontos }}</td>
+                            <td>{{ time.gm }}</td>
+                            <td>{{ time.gs }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="col-7">
-            <input type="text" v-model="novoJogo.fora.gols">
-            {{ novoJogo.fora.time ? novoJogo.fora.time.nome : '' }}
-            <img :src="novoJogo.fora.time ? novoJogo.fora.time.escudo : ''" alt="escudo time" class="escudo">
-        </div>
-        <!-- os metodos começam com @ e podem ser identificados assim -->
-        <button type="button" class="btn btn-primary" @click="fimJogo">Fim de jogo</button>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Escudo</th>
-                    <th>Nome</th>
-                    <th>Pontos</th>
-                    <th>GM</th>
-                    <th>GS</th>
-                    <th>Saldo</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="time in times">
-                    <td>
-                        <img :src="time.escudo" alt="escudo time">
-                    </td>
-                    <td>{{ time.nome }}</td>
-                    <td>{{ time.pontos }}</td>
-                    <td>{{ time.gm }}</td>
-                    <td>{{ time.gs }}</td>
-                </tr>
-            </tbody>
-        </table>
         <!-- ao colocar dois pontos antes do value você torna a prop reativa-->
         <!-- <input type="text" :value="gols" :id="gols+'id'" @input="gols = $event.target.value"> {{ gols }} -->
         <!-- ou simplesmente:-->
@@ -84,7 +91,8 @@
             fimJogo(timeVisitante, golsMarcados, golsSofridos) {
                 if(this.foiEmpate(golsMarcados, golsSofridos)) {
                     this.empate(golsMarcados, golsSofridos);
-                    timeVisitante.empate(golsMarcados, golsSofridos)
+                    timeVisitante.empate(golsMarcados, golsSofridos);
+                    return;
                 }
                 if(this.foiVitoria(golsMarcados, golsSofridos)) {
                     this.vitoria(golsMarcados, golsSofridos);
@@ -157,7 +165,8 @@
                         time: null,
                         gols: 0
                     }
-                }
+                },
+                visao: 'tabela'
             },
             methods: {
                 showAlert() {
@@ -175,6 +184,7 @@
                     this.novoJogo.casa.gols = 0;
                     this.novoJogo.fora.time = this.times[indiceFora];
                     this.novoJogo.fora.gols = 0;
+                    this.visao = 'placar';
                 },
                 fimJogo() {
                     var golsMarcados = parseInt(this.novoJogo.casa.gols);
@@ -182,6 +192,7 @@
                     var timeAdversario = this.novoJogo.fora.time;
                     var timeCasa = this.novoJogo.casa.time;
                     timeCasa.fimJogo(timeAdversario, golsMarcados, golsSofridos)
+                    this.visao = 'tabela';
                 }
             }
         })
