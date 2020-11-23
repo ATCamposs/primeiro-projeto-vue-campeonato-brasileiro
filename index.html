@@ -17,7 +17,9 @@
             <h3>Campeonato Brasileiro - Seria A - 2018</h3>
         </div>
         <!-- ao colocar dois pontos antes do value você torna a prop reativa-->
-        <input type="text" :value="gols" :id="gols+'id'" @input="pegarValor"> {{ gols }}
+        <!-- <input type="text" :value="gols" :id="gols+'id'" @input="gols = $event.target.value"> {{ gols }} -->
+        <!-- ou simplesmente:-->
+        <input type="text" :id="gols+'id'" v-model="gols"> {{ gols }}
         <!-- os metodos começam com @ e podem ser identificados assim -->
         <button class="btn btn-primary" @click="showAlert">Fim de jogo</button>
     </div>
@@ -43,3 +45,5 @@
 
 <!-- Data binding Programacao --- HTML -->
 <!-- One way data binding -->
+<!-- One way data binding -->
+<!-- Two way data binding -v-model -->
